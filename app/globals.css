@@ -6,21 +6,45 @@
 }
 
 @theme inline {
+  /* COLORS */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primaryBackground: #102216;
+  /* --color-secondaryBackground: #1a1a1a; */
+  --color-secondaryBackground: #25342a;
+  --color-terminalGreen: #00ff41;
+  --color-terminalGreenSecondary: #00ff004d;
+  --color-accentAmber: #ffb000;
+
+  /* Secondary colors */
+  --color-textMuted: #666666;
+  --color-textSecondary: #ffffffcc;
+  --color-borderLines: #333333;
+  --color-errorRed: #ff0033;
+  --color-success: #00ff41;
+
+  /* FONTS */
+  --font-ui: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-terminal: var(--font-inconsolata);
+
+  /* SHADOWS */
+  --shadow-box: 0px 0px 30px rgba(0, 255, 65, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-primaryBackground);
+}
+
+.bottomBorder {
+  @apply border-b-[0.5px]
+   border-b-terminalGreenSecondary;
 }
