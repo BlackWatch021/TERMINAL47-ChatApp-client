@@ -34,10 +34,40 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    box-sizing: border-box;
+    /* box-sizing: border-box; */
     padding: 0;
     margin: 0;
   }
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-terminalGreen) transparent;
+}
+
+/* Chrome, Edge, Safari */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-terminalGreen);
+  border-radius: 9999px;
+  box-shadow: 0 0 6px rgba(0, 255, 65, 0.5); /* terminal glow */
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #00cc33;
 }
 
 body {
@@ -47,4 +77,15 @@ body {
 .bottomBorder {
   @apply border-b-[0.5px]
    border-b-terminalGreenSecondary;
+}
+
+.timer {
+  @apply p-3
+  rounded-md
+  border
+  text-xl 
+  font-terminal  
+  text-center
+ bg-primaryBackground
+ border-terminalGreen;
 }
