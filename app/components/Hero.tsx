@@ -2,14 +2,17 @@
 import { CirclePlus } from "lucide-react";
 import React, { useState } from "react";
 import Button from "./Button";
+import { io } from "socket.io-client";
+import { useChat } from "@/hooks/useChat";
 
 const Hero = () => {
-  const [room, setRoom] = useState("");
-  const [time, setTime] = useState("5");
+  const [roomName, setRoomName] = useState("");
+  const [durationMinutes, setDurationMinutes] = useState("5");
+  const { createRoom, roomId } = useChat();
 
   const handleRoomCreation = (e: React.ChangeEvent) => {
     e.preventDefault();
-    console.log({ room, time });
+    createRoom(roomName, parseInt(durationMinutes));
   };
 
   return (
@@ -45,9 +48,9 @@ const Hero = () => {
                 id="identifier"
                 type="text"
                 placeholder="E.G. NEBULA_PROTOCOL"
-                value={room}
+                value={roomName}
                 onChange={(e) => {
-                  setRoom(e.target.value);
+                  setRoomName(e.target.value);
                 }}
                 className="border border-terminalGreenSecondary bg-slate-900 py-3 px-4 rounded-md outline-0 "
                 required
@@ -77,11 +80,12 @@ const Hero = () => {
                     transition
                     cursor-pointer
                   "
-                  value={time}
+                  value={durationMinutes}
                   onChange={(e) => {
-                    setTime(e.target.value);
+                    setDurationMinutes(e.target.value);
                   }}
                 >
+                  <option value="1">01 : 00 MIN</option>
                   <option value="5">05 : 00 MIN</option>
                   <option value="10">10 : 00 MIN</option>
                   <option value="20">20 : 00 MIN</option>
@@ -94,7 +98,7 @@ const Hero = () => {
                 </span>
               </div>
             </div>
-            <Button title={"create secure node"} />
+            <Button title={"create secure node"} icon={true} />
           </form>
         </div>
       </div>

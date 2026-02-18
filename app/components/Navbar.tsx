@@ -8,9 +8,9 @@ const Navbar = () => {
         <h1 className="font-extrabold font-mono text-xl">TERMINAL47</h1>
       </div>
       <div>
-        <span className="text-xs font-semibold text-white">
+        {/* <span className="text-xs font-semibold text-white">
           Room Id : 2342345534334223
-        </span>
+        </span> */}
       </div>
     </nav>
   );

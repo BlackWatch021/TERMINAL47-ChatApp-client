@@ -10,6 +10,7 @@ export const useChat = () => {
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [roomId, setRoomId] = useState();
+  const [roomStatus, setRoomStatus] = useState<boolean | null>(null);
 
   const router = useRouter();
 
@@ -47,23 +48,53 @@ export const useChat = () => {
   );
 
   // Join room
-  const joinRoom = () => {};
+  const joinRoom = useCallback(
+    (roomId: string, userName: string) => {
+      socket?.emit("join_room", { roomId, userName }, (result: any) => {
+        console.log("joining room", result.message);
+      });
+    },
+    [socket],
+  );
 
   // Send message
-  const sendMessage = () => {};
+  const sendMessage = useCallback(
+    (roomId: string, message: string) => {
+      if (roomId || message) {
+        socket?.emit("send_message", { roomId, message }, (result: any) => {
+          // console.log("Message send, from useChat hook", result);
+        });
+      }
+    },
+    [socket],
+  );
 
   // Listen for incoming messages
   //   const messages = () => {};
 
   // Listen for user join/leave
 
+  // Room exists
+  const roomExists = useCallback(
+    (roomId: string) => {
+      socket?.emit("room_exists", { roomId }, (result: any) => {
+        console.log({ success: result.success });
+        setRoomStatus(result.success);
+      });
+    },
+    [socket],
+  );
+
   return {
+    socket,
     createRoom,
     joinRoom,
     sendMessage,
+    roomExists,
     room,
     users,
     messages,
     roomId,
+    roomStatus,
   };
 };
