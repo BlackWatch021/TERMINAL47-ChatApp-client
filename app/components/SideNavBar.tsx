@@ -3,7 +3,7 @@ import { ArrowBigRight, TimerReset, Users } from "lucide-react";
 import { useState } from "react";
 
 const SideNavBar = () => {
-  const [expandSideBar, setExpandSideBar] = useState(true);
+  const [expandSideBar, setExpandSideBar] = useState(false);
 
   return (
     <aside
