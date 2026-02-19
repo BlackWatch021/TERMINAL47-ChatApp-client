@@ -12,33 +12,20 @@ const Chat = () => {
   const { id: roomId } = useParams<{ id: string }>();
   const [userName, setUserName] = useState("");
   const [userMessage, setUserMessage] = useState("");
-  const [allMessages, setAllMessages] = useState<
-    { username: string; message: string }[]
-  >([]);
   const [askUserName, setAskUserName] = useState(false);
-  const { socket, joinRoom, roomExists, roomStatus, sendMessage } = useChat();
+  const [userCount, setUserCount] = useState(0);
+  const [allMessages, setAllMessages] = useState<
+    { userName: string; message: string; system?: string }[]
+  >([]);
+
+  const { socket, joinRoom, roomExists, roomStatus, sendMessage, expiresAt } =
+    useChat();
 
   const sendMessageSocket = () => {
     if (!userMessage.trim()) return; // avoid empty messages
+    setUserMessage("");
     sendMessage(roomId, userMessage);
   };
-
-  //   useEffect(() => {
-  //     const savedUser = localStorage.getItem("username");
-
-  //     if (!savedUser) {
-  //       setAskUserName(true);
-  //     } else {
-  //       roomExists(roomId);
-  //       setAskUserName(false);
-  //       setUserName(savedUser);
-  //       joinRoom(roomId, userName);
-  //     }
-  //  socket?.on("receive_message", (data) => {
-  //       console.log("User message to all", data.message);
-  //     });
-
-  //   }, [userName, roomStatus,socket]);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("username");
@@ -61,7 +48,6 @@ const Chat = () => {
 
   //isten for messages (with cleanup)
   useEffect(() => {
-    console.log("Is this socket useEffect even working, lets check");
     if (!socket) return;
 
     const handleReceive = (data: any) => {
@@ -69,6 +55,30 @@ const Chat = () => {
     };
 
     socket.on("receive_message", handleReceive);
+    socket.on("user_joined", (data) => {
+      console.log("User joined data", data);
+      setAllMessages((prev) => [
+        ...prev,
+        {
+          userName: data.userName,
+          message: "",
+          system: "user_joined",
+        },
+      ]);
+      setUserCount(data.userCount);
+    });
+    socket.on("user_left", (data) => {
+      console.log("User left data", data);
+      setAllMessages((prev) => [
+        ...prev,
+        {
+          userName: data.userName,
+          message: "",
+          system: "user_left",
+        },
+      ]);
+      setUserCount(data.userCount);
+    });
 
     return () => {
       socket.off("receive_message", handleReceive);
@@ -107,7 +117,7 @@ const Chat = () => {
   }
   return (
     <div className="flex h-[93.5vh]">
-      <SideNavBar />
+      <SideNavBar userCount={userCount} expiresAt={expiresAt} />
       <ChatSection
         userMessage={userMessage}
         setUserMessage={setUserMessage}
