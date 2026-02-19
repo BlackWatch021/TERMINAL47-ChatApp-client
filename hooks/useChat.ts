@@ -11,6 +11,7 @@ export const useChat = () => {
   const [messages, setMessages] = useState([]);
   const [roomId, setRoomId] = useState();
   const [roomStatus, setRoomStatus] = useState<boolean | null>(null);
+  const [expiresAt, setExpiresAt] = useState<number | null>(null);
 
   const router = useRouter();
 
@@ -20,6 +21,12 @@ export const useChat = () => {
       process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:8000",
     );
     setSocket(newSocket);
+
+    // Must use newSocket here — `socket` state is still null at this point
+    newSocket.on("room_disposed", (data) => {
+      console.log("Room disposed event received", data);
+      setRoomStatus(false);
+    });
 
     return () => {
       newSocket.disconnect();
@@ -52,6 +59,11 @@ export const useChat = () => {
     (roomId: string, userName: string) => {
       socket?.emit("join_room", { roomId, userName }, (result: any) => {
         console.log("joining room", result.message);
+        if (result.success && result.room) {
+          // Store the absolute expiry timestamp so the timer stays accurate
+          const expiry = Date.now() + result.room.timeRemaining;
+          setExpiresAt(expiry);
+        }
       });
     },
     [socket],
@@ -69,16 +81,10 @@ export const useChat = () => {
     [socket],
   );
 
-  // Listen for incoming messages
-  //   const messages = () => {};
-
-  // Listen for user join/leave
-
   // Room exists
   const roomExists = useCallback(
     (roomId: string) => {
       socket?.emit("room_exists", { roomId }, (result: any) => {
-        console.log({ success: result.success });
         setRoomStatus(result.success);
       });
     },
@@ -96,5 +102,6 @@ export const useChat = () => {
     messages,
     roomId,
     roomStatus,
+    expiresAt,
   };
 };

@@ -5,7 +5,7 @@ interface ChatProps {
   userMessage: string;
   setUserMessage: React.Dispatch<React.SetStateAction<string>>;
   userName: string;
-  allMessages: { userName: string; message: string }[];
+  allMessages: { userName: string; message: string; system?: string }[];
   sendMessageSocket: () => void;
 }
 
@@ -31,23 +31,50 @@ const ChatSection = ({
             return (
               <div
                 key={index}
-                className={`w-full flex ${data.userName.toLowerCase() === userName.toLowerCase() ? "justify-end" : "justify-start"}`}
+                className={`w-full flex ${data.system ? "justify-start" : data.userName.toLowerCase() === userName.toLowerCase() ? "justify-end" : "justify-start"}`}
               >
-                <div className="max-w-[70%] bg-secondaryBackground rounded-md px-4 py-2">
-                  <p
-                    className={`${data.userName.toLowerCase() === userName.toLowerCase() && "text-textSecondary"}`}
-                  >
-                    {data.message}
-                  </p>
-
-                  {data.userName.toLowerCase() === userName.toLowerCase() ? (
-                    ""
-                  ) : (
-                    <p className="text-xs mt-1 text-textSecondary">
-                      {data.userName}
+                {/* SYSTEM MESSAGE */}
+                {data.system ? (
+                  <div className="text-xs text-textMuted font-terminal">
+                    {/* USER JOINED THE ROOM */}
+                    {data.system === "user_joined" && (
+                      <p className="text-terminalGreen opacity-40">
+                        &gt;&gt; User{" "}
+                        <span className="font-bold italic underline underline-offset-1">
+                          {data.userName}
+                        </span>{" "}
+                        Joined the chat
+                      </p>
+                    )}
+                    {/* USER LEFT THE ROOM */}
+                    {data.system === "user_left" && (
+                      <p className="text-errorRed opacity-80">
+                        &gt;&gt; User{" "}
+                        <span className="font-bold italic underline underline-offset-1">
+                          {data.userName}
+                        </span>{" "}
+                        LEFT the chat
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  // CHAT MESSAGES
+                  <div className="max-w-[70%] bg-secondaryBackground rounded-md px-4 py-2">
+                    <p
+                      className={`${data.userName.toLowerCase() === userName.toLowerCase() && "text-textSecondary"}`}
+                    >
+                      {data.message}
                     </p>
-                  )}
-                </div>
+
+                    {data.userName.toLowerCase() === userName.toLowerCase() ? (
+                      ""
+                    ) : (
+                      <p className="text-xs mt-1 text-textSecondary">
+                        {data.userName}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
