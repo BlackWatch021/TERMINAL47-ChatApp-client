@@ -18,23 +18,23 @@ const Hero = () => {
   return (
     <div>
       <div className="flex flex-col items-center py-20 gap-y-5 bottomBorder">
-        <h1 className="font-bold uppercase text-4xl [word-spacing:20px] underline decoration-1 underline-offset-4">
+        <h1 className="font-bold text-center uppercase text-2xl md:text-4xl [word-spacing:20px] underline decoration-1 underline-offset-4">
           SECURE. EPHEMERAL. ANONOYMOUS.
         </h1>
-        <p className="text-textSecondary text-center text-sm">
+        <p className="text-textSecondary text-center text-xs md:text-sm">
           Initialize a elf-destructing communication node. No logs. No
           persistence.
           <br />
           Just pure data exchange.
         </p>
         {/* Create room form */}
-        <div className="w-1/2 text-sm font-mono rounded-md bg-secondaryBackground py-6 px-8 border-terminalGreenSecondary border shadow-box ">
-          <div className="flex text-xl gap-1 items-center">
+        <div className="w-2/3 md:w-1/2 text-sm font-mono rounded-md bg-secondaryBackground py-6 px-8 border-terminalGreenSecondary border shadow-box ">
+          <div className="flex text-md md:text-xl gap-1 items-center">
             <CirclePlus size={16} />
             <p className="uppercase">initize_terminal_config</p>
           </div>
           <form
-            className="mt-6 flex flex-col gap-y-6"
+            className="mt-6 flex flex-col text-sm md:text-base  gap-y-6"
             onSubmit={handleRoomCreation}
           >
             <div className="flex flex-col gap-y-2">
@@ -98,7 +98,7 @@ const Hero = () => {
                 </span>
               </div>
             </div>
-            <Button title={"create secure node"} icon={true} />
+            <Button title={"create node"} icon={true} />
           </form>
         </div>
       </div>
