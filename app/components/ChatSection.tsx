@@ -1,5 +1,5 @@
 import { BadgePlus, Send } from "lucide-react";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 interface ChatProps {
   userMessage: string;
@@ -16,6 +16,12 @@ const ChatSection = ({
   userName,
   sendMessageSocket,
 }: ChatProps) => {
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [allMessages]);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -75,6 +81,7 @@ const ChatSection = ({
                     )}
                   </div>
                 )}
+                <div ref={bottomRef} />
               </div>
             );
           })}

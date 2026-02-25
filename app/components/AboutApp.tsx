@@ -5,9 +5,9 @@ import FAQ from "./FAQ";
 const AboutApp = () => {
   return (
     <div className="flex justify-center ">
-      <div className="flex justify-between space-y-6 font-terminal text-sm md:text-base p-6 w-7/12">
+      <div className="flex flex-col md:flex-row items-center md:items-start justify-between space-y-12 font-terminal text-sm md:text-base p-6 w-8/12">
         {/* ABOUT project */}
-        <div className="w-5/12 ">
+        <div className="w-12/12 md:w-5/12 ">
           <div className="flex items-center gap-2 mb-4">
             <Info size={18} />
             <h3 className="font-mono uppercase tracking-[0.2em] font-bold">
@@ -15,7 +15,7 @@ const AboutApp = () => {
             </h3>
           </div>
 
-          <div className="space-y-4 pt-2 text-textSecondary font-terminal text-sm">
+          <div className="space-y-4 pt-2 text-textSecondary font-terminal text-xs md:text-sm">
             <blockquote className="before:content-['>'] before:mr-3 ">
               All communications are handled via volatile, ephemeral buffers in
               real-time. Transmission is limited to active link-holders only.
@@ -34,7 +34,7 @@ const AboutApp = () => {
           </div>
         </div>
         {/* FAQs */}
-        <div className="w-5/12">
+        <div className="w-12/12 md:w-5/12 ">
           <div className="flex items-center gap-2 mb-4">
             <CircleQuestionMark size={18} />
             <h3 className="font-mono uppercase tracking-[0.2em] font-bold">
