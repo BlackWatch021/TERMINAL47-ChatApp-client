@@ -1,36 +1,203 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TERMINAL47
 
-## Getting Started
+Anonymous, ephemeral real-time chat with live translation.  
+No signup. Link-only access. Hacker terminal UI.  
+Switch languages mid-chat — history bulk-translates instantly.
 
-First, run the development server:
+<img src="/assets/Cover.png" alt="Terminal47 Chat Interface" width="800"/>
+
+---
+
+## ✨ Features
+
+- **Zero-friction access** — Share link, join as `Agent-47`
+- **Real-time chat** — Socket.io broadcasts
+- **Live translation** — Bulk history + streaming new messages
+- **User presence** — Live count + join/leave notifications
+- **Room expiry** — Auto-destruct countdown
+- **Hacker terminal UI** — Green monospace glow aesthetic
+- **Anonymous** — No authentication (Agent names via localStorage)
+- **TypeScript** — End-to-end type safety
+- **Mobile responsive** — Collapsible sidebar
+- **Typing indicators**
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+- Next.js 15
+- TypeScript
+- Tailwind CSS
+- Socket.io Client
+- Lucide React
+- JetBrains Mono
+
+### Backend
+
+- Express.js
+- Socket.io
+- JavaScript
+- dotenv
+- CORS
+
+### Translation
+
+- Lingo.dev SDK
+
+---
+
+## 🚀 Quick Start
+
+---
+
+### 1️⃣ Backend Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd server
+cp .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Edit `.env`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+PORT=8000
+LINGO_DEV_API_KEY=your_key_here
+CLIENT_URL=http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run backend:
 
-## Learn More
+```bash
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Backend runs at:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+http://localhost:8000
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+### 2️⃣ Frontend Setup
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+cd client
+cp .env.example .env
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Edit `.env`:
+
+```env
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+```
+
+Run frontend:
+
+```bash
+npm install
+npm run dev
+```
+
+Frontend runs at:
+
+```
+http://localhost:3000
+```
+
+---
+
+## 🧪 Test Flow
+
+1. Open `http://localhost:3000`
+2. Create a room → Copy generated link `/chat/abc123`
+3. Open link in incognito
+4. Join as anonymous Agent
+5. Start chatting
+6. Switch language → Entire history translates instantly ✨
+7. Timer hits 1 min → Red warning
+8. Timer expires → Room auto-destructs permanently
+
+---
+
+## 🌐 Translation Flow
+
+<img src="/assets/img2.png" alt="Terminal47 Chat Interface" width="800"/>
+
+```
+Language Switch (SideNavBar)
+        ↓
+useEffect triggers → /auth/translation/bulk
+        ↓
+allMessages[] → Lingo.dev → setAllMessages(translated)
+        ↓
+New message → socket.on()
+        ↓
+/auth/translation/chunk
+        ↓
+Auto-translated before render
+```
+
+---
+
+## 🔒 Privacy First
+
+- No database
+- No authentication
+- No message logs
+- Link-only access (Room ID = access key)
+- Pure in-memory storage
+- Data erased automatically on expiry
+- Zero persistence by design
+
+---
+
+## ✅ V1 Checklist
+
+- [x] Real-time messaging (Socket.io)
+- [x] User presence tracking + system messages
+- [x] Live translation (bulk + streaming)
+- [x] Accurate room expiry countdown
+- [x] Hacker terminal UI
+- [x] Anonymous link-based access
+- [x] Mobile responsive layout
+- [x] TypeScript end-to-end
+- [x] Production-safe error states
+
+---
+
+## 🔮 Future Plans
+
+### V2 Roadmap
+
+- Redis TTL room persistence
+- Room passwords
+- File/image sharing
+- Terminal commands (`/clear`, `/name Agent99`)
+- Advanced typing indicators
+- Optional limited message history (last 50 messages)
+
+---
+
+## 🧠 Philosophy
+
+TERMINAL47 is designed around:
+
+- Ephemerality
+- Identity preservation
+- Stateless architecture
+- Minimal attack surface
+- Zero-data liability
+
+This is a privacy-first communication experiment — not a traditional chat app.
+
+---
+
+## 🙌 Credits
+
+- Lingo.dev — Translation SDK
+- Socket.io — Real-time engine
+- Next.js — Full-stack framework
