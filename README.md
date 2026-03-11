@@ -195,9 +195,3 @@ TERMINAL47 is designed around:
 This is a privacy-first communication experiment — not a traditional chat app.
 
 ---
-
-## 🙌 Credits
-
-- Lingo.dev — Translation SDK
-- Socket.io — Real-time engine
-- Next.js — Full-stack framework
