@@ -2,7 +2,6 @@
 import { CirclePlus } from "lucide-react";
 import React, { useState } from "react";
 import Button from "./Button";
-import { io } from "socket.io-client";
 import { useChat } from "@/hooks/useChat";
 
 const Hero = () => {
