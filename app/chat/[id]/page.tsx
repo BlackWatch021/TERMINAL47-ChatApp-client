@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
+import { decryptMessage } from "@/utils/encryption";
 
 const Chat = () => {
   const { id: roomId } = useParams<{ id: string }>();
@@ -14,17 +15,26 @@ const Chat = () => {
   const [userMessage, setUserMessage] = useState("");
   const [askUserName, setAskUserName] = useState(false);
   const [userCount, setUserCount] = useState(0);
+  const [roomKey, setRoomKey] = useState("");
   const [allMessages, setAllMessages] = useState<
     { userName: string; message: string; system?: string }[]
   >([]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.hash.slice(1));
+    const key = params.get("key");
+
+    if (key) {
+      setRoomKey(key);
+    }
+  }, []);
   const { socket, joinRoom, roomExists, roomStatus, sendMessage, expiresAt } =
     useChat();
 
   const sendMessageSocket = () => {
     if (!userMessage.trim()) return; // avoid empty messages
     setUserMessage("");
-    sendMessage(roomId, userMessage);
+    sendMessage(roomId, userMessage, roomKey);
   };
 
   useEffect(() => {
@@ -50,8 +60,24 @@ const Chat = () => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleReceive = (data: any) => {
-      setAllMessages((prev) => [...prev, data]);
+    const handleReceive = async (data: any) => {
+      try {
+        const decrypted = await decryptMessage(
+          data.message.ciphertext,
+          data.message.iv,
+          roomKey,
+        );
+
+        setAllMessages((prev) => [
+          ...prev,
+          {
+            userName: data.userName,
+            message: decrypted,
+          },
+        ]);
+      } catch {
+        console.log("Failed to decrypt message");
+      }
     };
 
     socket.on("receive_message", handleReceive);

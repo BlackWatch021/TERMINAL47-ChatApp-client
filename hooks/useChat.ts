@@ -1,5 +1,6 @@
 // hooks/useChat.ts (or useRoom.ts)
 
+import { encryptMessage, generateRoomKey } from "@/utils/encryption";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
@@ -46,7 +47,8 @@ export const useChat = () => {
 
           console.log("result", result.roomId);
           if (result.roomId) {
-            router.push(`/chat/${result.roomId}`);
+            const roomKey = generateRoomKey();
+            router.push(`/chat/${result.roomId}#key=${roomKey}`);
           }
         },
       );
@@ -71,12 +73,18 @@ export const useChat = () => {
 
   // Send message
   const sendMessage = useCallback(
-    (roomId: string, message: string) => {
-      if (roomId || message) {
-        socket?.emit("send_message", { roomId, message }, (result: any) => {
+    async (roomId: string, message: string, roomKey: string) => {
+      if (!roomId || !message) return;
+
+      // Encrypt message
+      const encryptedMessage = await encryptMessage(message, roomKey);
+      socket?.emit(
+        "send_message",
+        { roomId, message: encryptedMessage },
+        (result: any) => {
           // console.log("Message send, from useChat hook", result);
-        });
-      }
+        },
+      );
     },
     [socket],
   );
