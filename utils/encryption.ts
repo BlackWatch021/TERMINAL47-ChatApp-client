@@ -1,5 +1,16 @@
 // utils/encryption.ts
 
+// Validate that a key is a proper 256-bit AES key (base64-encoded, 32 bytes)
+export function isValidRoomKey(key: string): boolean {
+  if (!key) return false;
+  try {
+    const bytes = Uint8Array.from(atob(key), (c) => c.charCodeAt(0));
+    return bytes.length === 32;
+  } catch {
+    return false;
+  }
+}
+
 // Generate random room key (256-bit)
 export function generateRoomKey() {
   const key = crypto.getRandomValues(new Uint8Array(32));

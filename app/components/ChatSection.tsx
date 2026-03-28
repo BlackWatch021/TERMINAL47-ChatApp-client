@@ -62,6 +62,13 @@ const ChatSection = ({
                         LEFT the chat
                       </p>
                     )}
+                    {/* KEY COMPROMISED */}
+                    {data.system === "key_compromised" && (
+                      <p className="text-yellow-500 opacity-90">
+                        &gt;&gt; [ERROR] Your encryption key is invalid or
+                        compromised. Message not sent.
+                      </p>
+                    )}
                   </div>
                 ) : (
                   // CHAT MESSAGES

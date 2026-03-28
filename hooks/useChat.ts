@@ -48,7 +48,9 @@ export const useChat = () => {
           console.log("result", result.roomId);
           if (result.roomId) {
             const roomKey = generateRoomKey();
-            router.push(`/chat/${result.roomId}#key=${roomKey}`);
+            router.push(
+              `/chat/${result.roomId}#key=${encodeURIComponent(roomKey)}`,
+            );
           }
         },
       );
@@ -71,19 +73,17 @@ export const useChat = () => {
     [socket],
   );
 
-  // Send message
+  // Send message — throws if encryption fails (e.g. invalid key)
   const sendMessage = useCallback(
     async (roomId: string, message: string, roomKey: string) => {
       if (!roomId || !message) return;
 
-      // Encrypt message
+      // Encrypt message — will throw if roomKey is invalid
       const encryptedMessage = await encryptMessage(message, roomKey);
       socket?.emit(
         "send_message",
         { roomId, message: encryptedMessage },
-        (result: any) => {
-          // console.log("Message send, from useChat hook", result);
-        },
+        (_result: any) => {},
       );
     },
     [socket],
