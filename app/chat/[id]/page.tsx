@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
-import { decryptMessage } from "@/utils/encryption";
+import { decryptMessage, isValidRoomKey } from "@/utils/encryption";
 
 const Chat = () => {
   const { id: roomId } = useParams<{ id: string }>();
@@ -31,10 +31,18 @@ const Chat = () => {
   const { socket, joinRoom, roomExists, roomStatus, sendMessage, expiresAt } =
     useChat();
 
-  const sendMessageSocket = () => {
+  const sendMessageSocket = async () => {
     if (!userMessage.trim()) return; // avoid empty messages
     setUserMessage("");
-    sendMessage(roomId, userMessage, roomKey);
+    try {
+      await sendMessage(roomId, userMessage, roomKey);
+    } catch {
+      // Encryption failed — key is compromised/invalid
+      setAllMessages((prev) => [
+        ...prev,
+        { userName: "", message: "", system: "key_compromised" },
+      ]);
+    }
   };
 
   useEffect(() => {
@@ -53,8 +61,12 @@ const Chat = () => {
     if (!socket || !userName) return;
 
     roomExists(roomId);
-    joinRoom(roomId, userName);
-  }, [socket, userName, roomId]);
+
+    // Only join if the key is valid — invalid key users are locked out
+    if (isValidRoomKey(roomKey)) {
+      joinRoom(roomId, userName);
+    }
+  }, [socket, userName, roomId, roomKey]);
 
   //isten for messages (with cleanup)
   useEffect(() => {
@@ -109,7 +121,7 @@ const Chat = () => {
     return () => {
       socket.off("receive_message", handleReceive);
     };
-  }, [socket]);
+  }, [socket, roomKey]);
 
   if (askUserName) {
     return (
@@ -132,6 +144,24 @@ const Chat = () => {
     return (
       <div className="w-full h-[80vh] flex flex-col gap-y-2 justify-center items-center">
         <p className="font-terminal text-2xl">Agent, room doen't exist</p>
+        <Link
+          href="/"
+          className="underline underline-offset-4 text-textSecondary hover:text-terminalGreen transition-all duration-200"
+        >
+          Go back
+        </Link>
+      </div>
+    );
+  }
+
+  // Invalid / missing room key — block access entirely
+  if (!isValidRoomKey(roomKey)) {
+    return (
+      <div className="w-full h-[80vh] flex flex-col gap-y-4 justify-center items-center">
+        <p className="font-terminal text-2xl text-errorRed">ACCESS DENIED</p>
+        <p className="font-terminal text-sm text-textSecondary">
+          Your encryption key is missing or compromised.
+        </p>
         <Link
           href="/"
           className="underline underline-offset-4 text-textSecondary hover:text-terminalGreen transition-all duration-200"
