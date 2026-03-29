@@ -1,6 +1,14 @@
 "use client";
-import { ArrowBigRight, TimerReset, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  ArrowBigRight,
+  TimerReset,
+  Users,
+  Link2,
+  Check,
+  Share2,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { SHARE_OPTIONS } from "@/utils/icons";
 
 const SideNavBar = ({
   userCount,
@@ -12,11 +20,30 @@ const SideNavBar = ({
   const [expandSideBar, setExpandSideBar] = useState(false);
   const [formattedTime, setFormattedTime] = useState("00:00");
   const [isLowTime, setIsLowTime] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState("");
+  const shareRef = useRef<HTMLDivElement>(null);
+
+  // Grab the full URL (including hash key)
+  useEffect(() => {
+    setCurrentUrl(window.location.href);
+  }, []);
+
+  // Close share panel on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (shareRef.current && !shareRef.current.contains(e.target as Node)) {
+        setShareOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   useEffect(() => {
     if (!expiresAt) return;
 
-    // Run immediately to avoid 1-second delay on first render
     const tick = () => {
       const remainingMs = expiresAt - Date.now();
       const totalSeconds = Math.max(0, Math.floor(remainingMs / 1000));
@@ -29,7 +56,6 @@ const SideNavBar = ({
       );
       //  check threshold (1 minute = 60 sec)
       setIsLowTime(totalSeconds <= 60);
-
       if (totalSeconds <= 0) clearInterval(interval);
     };
 
@@ -37,6 +63,24 @@ const SideNavBar = ({
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
   }, [expiresAt]);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(currentUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback
+      const el = document.createElement("textarea");
+      el.value = currentUrl;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <aside
@@ -68,7 +112,6 @@ const SideNavBar = ({
         </button>
 
         {/* Connection status */}
-
         <h3
           className={`${expandSideBar ? "block border-l-2 border-terminalGreen" : "hidden"} md:block text-terminalGreen md:border-l-2 
         md:border-terminalGreen pl-2`}
@@ -84,8 +127,115 @@ const SideNavBar = ({
           </span>
         </div>
 
-        {/* Timer */}
+        {/* ── Share / Copy Link Section ── */}
+        <div
+          ref={shareRef}
+          className={`flex flex-col gap-y-3 ${!expandSideBar ? "pointer-events-none md:pointer-events-auto" : ""}`}
+        >
+          {/* Copy Link button */}
+          <button
+            onClick={handleCopy}
+            title="Copy room link"
+            className={`
+              flex items-center gap-x-4 w-full
+              py-1
+              rounded-md
+              border border-transparent
+              transition-all duration-200
+              hover:text-terminalGreen
+              ${copied ? "text-terminalGreen" : "text-textSecondary"}
+              cursor-pointer group
+            `}
+          >
+            <span className="shrink-0 transition-transform duration-200 group-hover:scale-110">
+              {copied ? <Check size={18} /> : <Link2 size={18} />}
+            </span>
+            <span
+              className={`${expandSideBar ? "block" : "hidden"} md:block text-sm whitespace-nowrap overflow-hidden text-ellipsis`}
+            >
+              {copied ? "Link Copied!" : "Copy Room Link"}
+            </span>
+          </button>
 
+          {/* Share via... button */}
+          <button
+            onClick={() => setShareOpen((prev) => !prev)}
+            title="Share room link"
+            className={`
+              flex items-center gap-x-4 w-full
+              py-1
+              rounded-md
+              border border-transparent
+              transition-all duration-200
+              hover:text-terminalGreen
+              text-textSecondary
+              cursor-pointer group
+            `}
+          >
+            <span className="shrink-0 transition-transform duration-200 group-hover:scale-110">
+              <Share2 size={18} />
+            </span>
+            <span
+              className={`${expandSideBar ? "block" : "hidden"} md:block text-sm whitespace-nowrap`}
+            >
+              Share via...
+            </span>
+          </button>
+
+          {/* Share options panel — only render when expanded or on desktop */}
+          {shareOpen && (expandSideBar || true) && (
+            <div
+              className={`flex-col gap-y-1 animate-fadeIn ${expandSideBar ? "flex" : "hidden"} md:flex`}
+            >
+              {SHARE_OPTIONS.map((opt) => (
+                <a
+                  key={opt.label}
+                  href={opt.getUrl(currentUrl)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={`Share via ${opt.label}`}
+                  className={`
+                    flex items-center gap-x-4
+                    w-2/3
+                    py-1 pl-3
+                    rounded-md
+                    border border-transparent
+                    transition-all duration-200
+                    cursor-pointer group
+                    text-textSecondary hover:text-white
+                  `}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      opt.color + "80";
+                    (e.currentTarget as HTMLElement).style.background =
+                      opt.color + "15";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "transparent";
+                    (e.currentTarget as HTMLElement).style.background =
+                      "transparent";
+                  }}
+                >
+                  <span
+                    className="shrink-0 transition-transform duration-200 group-hover:scale-110"
+                    style={{ color: opt.color }}
+                  >
+                    {opt.icon}
+                  </span>
+                  <span
+                    className="text-sm whitespace-nowrap"
+                    style={{ color: "inherit" }}
+                  >
+                    {opt.label}
+                  </span>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Timer */}
         <div
           className={`${expandSideBar && "timer"} md:p-3
   md:rounded-md
