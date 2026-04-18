@@ -7,18 +7,16 @@ interface UserNameProps {
 }
 
 const UserName = ({ setUserName, setAskUserName }: UserNameProps) => {
-  const handleSubmit = (e: React.SubmitEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    const formData = new FormData(e.currentTarget);
     const userName = formData.get("setUserName");
 
-    if (!userName.trim()) return;
+    if (!userName || !userName.toString().trim()) return;
 
-    if (userName) {
-      setAskUserName(false);
-      setUserName(userName.toString());
-      localStorage.setItem("username", userName.toString());
-    }
+    setAskUserName(false);
+    setUserName(userName.toString().trim());
+    localStorage.setItem("username", userName.toString().trim());
   };
 
   return (
